@@ -1,0 +1,24 @@
+# Example: run subtrans next to Bazarr. Put the OpenRouter key (one per app, with a monthly cap) in
+# ./secrets/subtitles.key. The folder is mounted, not the file: a replaced key file is a new inode that a single-file
+# bind mount never sees.
+services:
+  subtrans:
+    image: docker.io/library/python:3.14.8-alpine3.23
+    container_name: subtrans
+    user: "1000:1000"
+    command: ["python3", "-u", "/app/subtrans.py"]
+    environment:
+      - TZ=Europe/Amsterdam
+      - OPENROUTER_KEY_FILE=/run/secrets/openrouter/subtitles.key
+      # - TIER1=openai/gpt-6-luna
+      # - TIER2=google/gemini-3.7-flash
+      # - JUDGE=anthropic/claude-sonnet-5.5
+      # - JUDGE_RATE=0.2
+    volumes:
+      - ./subtrans/subtrans.py:/app/subtrans.py:ro
+      - ./data:/data
+      - ./secrets:/run/secrets/openrouter:ro
+    ports:
+      - "8791:9876"
+    read_only: true
+    restart: unless-stopped
