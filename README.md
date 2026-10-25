@@ -8,6 +8,7 @@ automated quality gates, an LLM judge on a sample, per-app API keys with a month
   [Bazarr](https://www.bazarr.media/) uses as a translator.
 - `bench/`: the benchmark: translate the same passages with 20+ models, score them with chrF, a line-alignment
   check and blind LLM judges anchored on a human translation.
+- `spend/`: spend and budget per app and per model, as one JSON status for a dashboard.
 - `tests/`: unit tests for parsing and the quality checks.
 
 In production since October 2026: about 1,900 translation calls in the first three weeks, for under $3 in total.
@@ -41,6 +42,21 @@ flowchart LR
 - **Budget isolation**: each app has its own OpenRouter key with a monthly cap (translations, benchmarks, other
   apps), so a runaway benchmark can't stop production. The key file is read on every call, so a rotated key works
   without a restart.
+
+## Spend and budgets
+
+`spend/openrouter-spend.py` runs from cron and writes one JSON status (no secrets) that a dashboard reads:
+
+- **Per key, so per app**: monthly cap, remaining, spend today, this week and this month, and a projected month-end.
+  Benchmarks are one-offs, so they're counted once instead of extrapolated.
+- **Per model**: from the service's own per-call log, with the exact cost OpenRouter reports.
+- **Account balance**, and the key that must not stop (the production app), for a single "is production safe" tile.
+- If a key was deleted mid-month, its spend disappears from the key totals; the per-call log then gives the fuller
+  picture, and the status says which source it used.
+
+```sh
+KEYS="Subtitles=subtitles.key,Benchmarks=bench.key" COSTS=data/costs.jsonl OUT=status.json python3 spend/openrouter-spend.py
+```
 
 ## The free quality checks
 
