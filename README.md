@@ -11,7 +11,7 @@ automated quality gates, an LLM judge on a sample, per-app API keys with a month
 - `spend/`: spend and budget per app and per model, as one JSON status for a dashboard.
 - `tests/`: unit tests for parsing and the quality checks.
 
-In production since October 2026: about 1,900 translation calls in the first three weeks, for under $3 in total.
+In production since October 2026: about 1,900 translation calls in the first three weeks, for under €3 in total.
 
 ## How a translation flows
 
@@ -88,7 +88,8 @@ Bazarr sends (its system prompt + a JSON list of lines).
 4. **Cost**: exact per call, scaled to an average episode (26,000 Dutch characters).
 5. A blind by-eye review of the 24 lines where the models disagreed most.
 
-The whole benchmark cost $2.89 on OpenRouter plus about €0.40 on Google's API.
+The whole benchmark cost about €2.50 on OpenRouter plus about €0.40 on Google's API. Amounts are in euros; OpenRouter
+bills in US dollars, converted at 0.86.
 
 ### Results
 
